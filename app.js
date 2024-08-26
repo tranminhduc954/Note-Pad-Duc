@@ -33,20 +33,6 @@ const addTask = (new_task) => {
     saveData(data);
 } 
 
-// Hàm xử lý nút thêm mới
-const formAddTask = document.forms.add_task;
-formAddTask.addEventListener('submit', (e) => {
-    let new_task;
-    const task = document.querySelector('#task');
-    new_task = {
-        task: task.value,
-        is_complete: false
-    };
-    addTask(new_task);
-    renderTask();
-    task.value = '';
-    e.preventDefault();
-})
 
 // Tạo hàm tạo công việc
 const createTaskItem = (task, is_complete, index) => {
@@ -54,7 +40,7 @@ const createTaskItem = (task, is_complete, index) => {
         <li class="task-item" index = ${index} is-complete = ${is_complete}>
                 <span class="task" onclick="markTaskComplete(${index})">${task}</span>
                 <div class="task-action">
-                    <button class="pencil-btn">
+                    <button onclick="pushEditTask(${index})" class="pencil-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -103,8 +89,48 @@ const deleteTask = (element, index) => {
         saveData(data);
         renderTask();
     } else {
-        // alert('Giữ nguyên rồi đấy')
+        
     }
 }
+
+// Hàm cập nhật task
+const pushEditTask = (index) => {
+    let data = loadData();
+    const btn = document.querySelector('#add_task button');
+    const task = document.querySelector('#task');
+    task.value = data[index].task;
+    task.setAttribute('index', index);
+    btn.innerText = 'Cập nhật';
+
+}
+
+const editTask = (task, index) => {
+    const btn = document.querySelector('#add_task button');
+    let data = loadData();
+    data[index].task = task;
+    btn.innerText = 'THÊM MỚI'
+    saveData(data);
+}
+
+// Hàm xử lý nút thêm mới
+const formAddTask = document.forms.add_task;
+formAddTask.addEventListener('submit', (e) => {
+    let new_task;
+    const task = document.querySelector('#task');
+    const index = task.getAttribute('index');
+    if (index) {
+        editTask(task.value, index);
+        task.removeAttribute('index');
+    } else {
+        new_task = {
+            task: task.value,
+            is_complete: false
+        };
+        addTask(new_task);
+    }
+    renderTask();
+    task.value = '';
+    e.preventDefault();
+});
 
 renderTask();
