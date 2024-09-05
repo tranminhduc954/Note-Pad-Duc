@@ -61,12 +61,16 @@ const createTaskItem = (task, is_complete, index) => {
 
 // Xuất danh sách công việc
 const renderTask = () => {
-    let data, ulTasksHtml, ulTask;
+    let data, ulTasksHtml, ulTask, task_result, count_complete;
+    task_result = document.querySelector('.task-result');
     ulTask = document.querySelector('ul.task');
     data = loadData();
+    count_complete = 0;
     ulTasksHtml = data.map((element, index) => {
+        if (element.is_complete == true) count_complete++;
         return createTaskItem(element.task, element.is_complete, index);
     });
+    task_result.textContent = `Đã xác nhận làm xong ${count_complete} công việc!`;
     ulTask.innerHTML = ulTasksHtml.join('');
 };
 
@@ -118,6 +122,13 @@ formAddTask.addEventListener('submit', (e) => {
     let new_task;
     const task = document.querySelector('#task');
     const index = task.getAttribute('index');
+
+    console.log(task.value.length);
+    if(task.value.length < 2) {
+        alert('Nhập lại nội dung task lớn hơn 2 ký tự');
+        return false;
+    };
+
     if (index) {
         editTask(task.value, index);
         task.removeAttribute('index');
